@@ -18,10 +18,10 @@ void Bumper::setBumperRadius(double size)
     _bumperRadius = size;
 }
 
-void Bumper::generateBumperData(const World& world, const Robot& robot, std_msgs::Bool& scan_msg_f, std_msgs::Bool& scan_msg_r) const
+void Bumper::generateBumperData(const World& world, const Robot& robot, std_msgs::msg::Bool& scan_msg_f, std_msgs::msg::Bool& scan_msg_r) const
 {
     // Generate laser data to perform bumper check
-    sensor_msgs::LaserScan lrf_msg;
+    sensor_msgs::msg::LaserScan lrf_msg;
     _lrf.generateLaserData(world, robot, lrf_msg);
     // Number of beams
     int N = lrf_msg.ranges.size();
@@ -38,7 +38,7 @@ void Bumper::generateBumperData(const World& world, const Robot& robot, std_msgs
     scan_msg_r.data = hitR;
 }
 
-bool Bumper::_checkHits(const sensor_msgs::LaserScan& lrf_msg, const int indexStart, const int indexEnd) const
+bool Bumper::_checkHits(const sensor_msgs::msg::LaserScan& lrf_msg, const int indexStart, const int indexEnd) const
 {
     bool hit = false;
 

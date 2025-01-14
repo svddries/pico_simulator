@@ -1,5 +1,5 @@
 #include "lrf.h"
-#include <std_msgs/Bool.h>
+#include "std_msgs/msg/bool.hpp"
 
 
 class Bumper
@@ -11,7 +11,7 @@ class Bumper
     void setRobotRadius(double radius);
     void setBumperRadius(double bumperSize);
     // Generate the bumper data msgs 
-    void generateBumperData(const World& world, const Robot& robot, std_msgs::Bool& scan_msg_f, std_msgs::Bool& scan_msg_r) const;
+    void generateBumperData(const World& world, const Robot& robot, std_msgs::msg::Bool& scan_msg_f, std_msgs::msg::Bool& scan_msg_r) const;
 
     private:
     // The sensor is implemented using an artificial LRF sensor

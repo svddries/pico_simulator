@@ -4,7 +4,7 @@
 #include "robot.h"
 
 #include <geolib/sensors/LaserRangeFinder.h>
-#include <sensor_msgs/LaserScan.h>
+#include <sensor_msgs/msg/laser_scan.hpp>
 
 class World;
 
@@ -17,7 +17,7 @@ public:
 
     ~LRF();
 
-    void generateLaserData(const World& world, const Robot& robot, sensor_msgs::LaserScan& scan_msg) const;
+    void generateLaserData(const World& world, const Robot& robot, sensor_msgs::msg::LaserScan& scan_msg) const;
 
     void setAngleLimits(double a_min, double a_max);
 
@@ -33,7 +33,7 @@ private:
 
     double noise_level_;
 
-    sensor_msgs::LaserScan msg_prototype_;
+    sensor_msgs::msg::LaserScan msg_prototype_;
 
 };
 

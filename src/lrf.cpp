@@ -2,6 +2,7 @@
 #include "world.h"
 
 #include <geolib/Shape.h>
+#include <rclcpp/rclcpp.hpp>
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -54,7 +55,7 @@ void LRF::setRangeLimits(double r_min, double r_max)
 
 // ----------------------------------------------------------------------------------------------------
 
-void LRF::generateLaserData(const World& world, const Robot& robot, sensor_msgs::LaserScan& scan_msg) const
+void LRF::generateLaserData(const World& world, const Robot& robot, sensor_msgs::msg::LaserScan& scan_msg) const
 {
     const Object& robot_obj = world.object(robot.robot_id);
     geo::Pose3D laser_pose = robot_obj.pose * robot.laser_pose;
@@ -96,6 +97,6 @@ void LRF::generateLaserData(const World& world, const Robot& robot, sensor_msgs:
         scan_msg.ranges[i] = r + randomUniform(-noise_level_, noise_level_);
     }
 
-    // Stamp with current ROS time
-    scan_msg.header.stamp = ros::Time(world.time());
+    // Stamp with current ROS 2 time
+    scan_msg.header.stamp = rclcpp::Clock().now();
 }
