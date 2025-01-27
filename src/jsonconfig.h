@@ -10,7 +10,7 @@
 #include <fstream>
 #include <boost/optional.hpp>
 
-#include <ros/console.h>
+#include <rclcpp/rclcpp.hpp> // Replace ros/console.h with rclcpp/rclcpp.hpp
 
 #include <vector>
 
@@ -125,23 +125,21 @@ public:
     }
 
     void print(){
-        ROS_INFO_STREAM("Simulator configuration settings:");
-        ROS_INFO_STREAM("Uncertain odom: " << uncertain_odom.value());
-        ROS_INFO_STREAM("Show full map: " << show_full_map.value());
-        ROS_INFO_STREAM("provide_internal_pose: " << provide_internal_pose.value());
-        ROS_INFO_STREAM("disable_speedcap: " << disable_speedcap.value());
-        ROS_INFO_STREAM("use pyro: " << use_pyro.value());
+        RCLCPP_INFO(rclcpp::get_logger("logger"), "Simulator configuration settings:");
+        RCLCPP_INFO(rclcpp::get_logger("logger"), "Uncertain odom: %s", uncertain_odom.value() ? "true" : "false");
+        RCLCPP_INFO(rclcpp::get_logger("logger"), "Show full map: %s", show_full_map.value() ? "true" : "false");
+        RCLCPP_INFO(rclcpp::get_logger("logger"), "Provide internal pose: %s", provide_internal_pose.value() ? "true" : "false");
+        RCLCPP_INFO(rclcpp::get_logger("logger"), "Disable speedcap: %s", disable_speedcap.value() ? "true" : "false");
+        RCLCPP_INFO(rclcpp::get_logger("logger"), "Use pyro: %s", use_pyro.value() ? "true" : "false");
         if (spawn_provided.value())
         {
-            ROS_INFO_STREAM("Spawn Location: " << spawn.value().getOrigin());
-            ROS_INFO_STREAM("Spawn Rotation: " << spawn.value().getBasis());
+            RCLCPP_INFO(rclcpp::get_logger("logger"), "Spawn Location: %s", spawn.value().getOrigin().toString().c_str());
+            RCLCPP_INFO(rclcpp::get_logger("logger"), "Spawn Rotation: %s", spawn.value().getBasis().toString().c_str());
         }
         else
-            ROS_INFO_STREAM("No spawn Location provided, will spawn robot in the middle of the map.");
-        ROS_INFO_STREAM("imported " << moving_objects.value().size() << " moving objects");
+            RCLCPP_INFO(rclcpp::get_logger("logger"), "No spawn Location provided, will spawn robot in the middle of the map.");
+        RCLCPP_INFO(rclcpp::get_logger("logger"), "Imported %zu moving objects", moving_objects.value().size());
     }
-
-
 
 public:
     boost::optional<bool> show_full_map;
