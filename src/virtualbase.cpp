@@ -37,10 +37,10 @@ Virtualbase::Virtualbase(bool disable_speedcap, bool uncertain_odom) : disable_s
     updateWheelUncertaintyFactors();
 }
 
-void Virtualbase::applyTwistAndUpdate(const geometry_msgs::Twist& cmd, double dt)
+void Virtualbase::applyTwistAndUpdate(const geometry_msgs::msg::Twist& cmd, double dt)
 {
     // apply speedcap
-    geometry_msgs::Twist twist;
+    geometry_msgs::msg::Twist twist;
     if(disable_speedcap_ == false){
         twist.linear.x  = sgn<double>(cmd.linear.x)  * std::min(std::abs(cmd.linear.x),0.5);
         twist.linear.y  = sgn<double>(cmd.linear.y)  * std::min(std::abs(cmd.linear.y),0.5);
@@ -77,7 +77,7 @@ void Virtualbase::applyTwistAndUpdate(const geometry_msgs::Twist& cmd, double dt
     actual_twist.angular.z = -v1 / (3.0*lw) -v2 / (3.0*lw) -v3 / (3.0*lw);
 }
 
-nav_msgs::Odometry Virtualbase::update_odometry(const nav_msgs::Odometry odom, const geometry_msgs::Twist twist, double dt) const
+nav_msgs::msg::Odometry Virtualbase::update_odometry(const nav_msgs::msg::Odometry odom, const geometry_msgs::msg::Twist twist, double dt) const
 {
     tf2::Transform delta;
     delta.setOrigin( tf2::Vector3(twist.linear.x*dt, twist.linear.y*dt, 0));
@@ -97,7 +97,7 @@ nav_msgs::Odometry Virtualbase::update_odometry(const nav_msgs::Odometry odom, c
 
     tf2::Transform new_odom = Todom*delta;
 
-    nav_msgs::Odometry new_odom_msg;
+    nav_msgs::msg::Odometry new_odom_msg;
     new_odom_msg.pose.pose.position.x = new_odom.getOrigin()[0];
     new_odom_msg.pose.pose.position.y = new_odom.getOrigin()[1];
     new_odom_msg.pose.pose.orientation.x = new_odom.getRotation().getX();

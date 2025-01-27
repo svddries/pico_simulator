@@ -5,9 +5,9 @@
 #ifndef EMC_SYSTEM_VIRTUALBASE_H
 #define EMC_SYSTEM_VIRTUALBASE_H
 
-#include "geometry_msgs/Twist.h"
-#include "geometry_msgs/Pose.h"
-#include "nav_msgs/Odometry.h"
+#include "geometry_msgs/msg/twist.h"
+#include "geometry_msgs/msg/pose.h"
+#include "nav_msgs/msg/odometry.h"
 
 #include <random>
 #include <cmath>
@@ -45,7 +45,7 @@ public:
     /**
      * Apply the input that is to be sent to the robot
      */
-    void applyTwistAndUpdate(const geometry_msgs::Twist& cmd, double dt);
+    void applyTwistAndUpdate(const geometry_msgs::msg::Twist& cmd, double dt);
 
     /**
      * Apply the input that was last sent again if no new input is available
@@ -71,11 +71,11 @@ public:
         }
     }
 
-    geometry_msgs::Twist getActualTwist() const{
+    geometry_msgs::msg::Twist getActualTwist() const{
         return actual_twist;
     }
 
-    nav_msgs::Odometry getOdom() const{
+    nav_msgs::msg::Odometry getOdom() const{
         return odometry_state;
     }
 
@@ -83,11 +83,11 @@ private:
     /**
      * update odometry by an instantaneous twist (stateless function)
      */
-    nav_msgs::Odometry update_odometry(const nav_msgs::Odometry odom, const geometry_msgs::Twist twist, double dt) const;
+    nav_msgs::msg::Odometry update_odometry(const nav_msgs::msg::Odometry odom, const geometry_msgs::msg::Twist twist, double dt) const;
 
-    geometry_msgs::Twist reference_twist;
-    geometry_msgs::Twist actual_twist;
-    nav_msgs::Odometry odometry_state;
+    geometry_msgs::msg::Twist reference_twist;
+    geometry_msgs::msg::Twist actual_twist;
+    nav_msgs::mag::Odometry odometry_state;
     double a1, a2, a3;
     bool disable_speedcap_;
     bool uncertain_odom_;

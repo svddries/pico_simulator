@@ -185,7 +185,7 @@ void visualize(const World& world, const Robot& robot, bool collision = false, b
     cv::waitKey(3);
 }
 
-visualization_msgs::MarkerArray create_rviz_objectmsg(const World &world)
+visualization_msgs::msg::MarkerArray create_rviz_objectmsg(const World &world)
 {
     visualization_msgs::MarkerArray objects;
     visualization_msgs::Marker object;
@@ -254,11 +254,11 @@ visualization_msgs::MarkerArray create_rviz_objectmsg(const World &world)
             geo::Vec2d p2vec = (obj.pose * vertices[triangle.i2_]).projectTo2d();
             geo::Vec2d p3vec = (obj.pose * vertices[triangle.i3_]).projectTo2d();
 
-            geometry_msgs::Point p1;
+            geometry_msgs::msg::Point p1;
             p1.x = p1vec.x; p1.y = p1vec.y; p1.z = 0;
-            geometry_msgs::Point p2;
+            geometry_msgs::msg::Point p2;
             p2.x = p2vec.x; p2.y = p2vec.y; p2.z = 0;
-            geometry_msgs::Point p3;
+            geometry_msgs::msg::Point p3;
             p3.x = p3vec.x; p3.y = p3vec.y; p3.z = 0;
 
             object.points.push_back(p1);
