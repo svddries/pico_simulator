@@ -1,10 +1,7 @@
 #include "heightmap.h"
 #include "door.h"
 
-#include <ros/console.h>
-#include <ros/rate.h>
-
-#include "polypartition/polypartition.h"
+#include <rclcpp/rclcpp.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <geolib/CompositeShape.h>
@@ -13,13 +10,13 @@
 #include <queue>
 
 
-MapLoader::MapLoader()
+MapLoader::MapLoader() : Node("map_loader")
 {
-    ros::SubscribeOptions map_sub_options = ros::SubscribeOptions::create<nav_msgs::OccupancyGrid>("/map", 1, boost::bind(&MapLoader::mapCallback, this, _1), ros::VoidPtr(), &cb_map);
-    sub_map = nh.subscribe(map_sub_options);
+    sub_map = this->create_subscription<nav_msgs::msg::OccupancyGrid>(
+        "/map", 1, std::bind(&MapLoader::mapCallback, this, std::placeholders::_1));
 }
 
-void MapLoader::getMap(nav_msgs::OccupancyGrid& mapRef)
+void MapLoader::getMap(nav_msgs::msg::OccupancyGrid& mapRef)
 {
     if (!initialized)
     {
@@ -28,7 +25,7 @@ void MapLoader::getMap(nav_msgs::OccupancyGrid& mapRef)
     mapRef = map;
 }
 
-void MapLoader::getMapMetadata(nav_msgs::MapMetaData& metadataRef)
+void MapLoader::getMapMetadata(nav_msgs::msg::MapMetaData& metadataRef)
 {
     if (!initialized)
     {
@@ -48,14 +45,15 @@ void MapLoader::getMapImage(cv::Mat& imageRef)
 
 void MapLoader::load()
 {
-    ros::Rate r(10);
-    ROS_INFO_STREAM("Waiting for map");
-    while(!initialized && ros::ok())
+    rclcpp::Rate r(10);
+    RCLCPP_INFO(this->get_logger(), "Waiting for map");
+    while (!initialized && rclcpp::ok())
     {
-        cb_map.callAvailable();
+        rclcpp::spin_some(this->get_node_base_interface());
         r.sleep();
     }
 }
+
 
 void MapLoader::mapCallback(const nav_msgs::OccupancyGrid::ConstPtr& msg)
 {
