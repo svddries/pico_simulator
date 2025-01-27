@@ -5,18 +5,15 @@
 #include "jsonconfig.h"
 #include "world.h"
 
-// ROS
-#include <ros/node_handle.h>
-#include <ros/publisher.h>
-#include <ros/subscriber.h>
-#include <geometry_msgs/Twist.h>
-#include <geometry_msgs/PoseStamped.h>
-#include <nav_msgs/Odometry.h>
-#include <std_msgs/Empty.h>
-#include <std_msgs/String.h>
-#include <std_msgs/Bool.h>
-#include <sensor_msgs/LaserScan.h>
-#include <nav_msgs/MapMetaData.h>
+#include <rclcpp/rclcpp.hpp>
+#include <geometry_msgs/msg/twist.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <nav_msgs/msg/odometry.hpp>
+#include <std_msgs/msg/empty.hpp>
+#include <std_msgs/msg/string.hpp>
+#include <std_msgs/msg/bool.hpp>
+#include <sensor_msgs/msg/laser_scan.hpp>
+#include <nav_msgs/msg/map_meta_data.hpp>
 
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/LinearMath/Matrix3x3.h>
@@ -24,8 +21,8 @@
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/static_transform_broadcaster.h>
 
-#include <geometry_msgs/TransformStamped.h>
-#include <sensor_msgs/JointState.h>
+#include <geometry_msgs/msg/transform_stamped.hpp>
+#include <sensor_msgs/msg/joint_state.hpp>
 
 #include <iostream>
 #include <string>
@@ -34,7 +31,7 @@ struct MapConfig{
     double mapResolution, mapOffsetX, mapOffsetY, mapOrientation;
     bool mapInitialised;
 };
-class Robot
+class Robot : public rclcpp::Node
 {
 
 public:
@@ -46,37 +43,37 @@ public:
 
     void internalTransform();
 
-    void importMetadata(const nav_msgs::MapMetaData& metadata);
+    void importMetadata(const nav_msgs::msg::MapMetaData& metadata);
 
     geo::Pose3D laser_pose;
     std::string robot_name;
     Id robot_id;
     Virtualbase base;
 
-    geometry_msgs::Twist::ConstPtr base_ref_;
+    std::shared_ptr<const geometry_msgs::msg::Twist> base_ref_;   
     bool request_open_door_;
 
     // Publisher
-    ros::Publisher pub_bumperF;
-    ros::Publisher pub_bumperR;
-    ros::Publisher pub_laser;
-    ros::Publisher pub_odom;
-    ros::Publisher pub_pose;
+    rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr pub_bumperF;
+    rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr pub_bumperR;
+    rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr pub_laser;
+    rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr pub_odom;
+    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pub_pose;
     tf2_ros::TransformBroadcaster pub_tf2;
     tf2_ros::StaticTransformBroadcaster pub_tf2static;
-    ros::Publisher pub_joints_ground_truth;
-    ros::Publisher pub_joints_internal;
+    rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr pub_joints_ground_truth;
+    rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr pub_joints_internal;
 
 private:
-    ros::NodeHandle nh;
+    // Node Handle is not needed in ROS 2, as the class itself is a Node
 
     // Subscribers
-    ros::Subscriber sub_base_ref;
-    ros::Subscriber sub_open_door;
-    ros::Subscriber sub_speak;
-    void baseReferenceCallback(const geometry_msgs::Twist::ConstPtr& msg);
-    void openDoorCallback(const std_msgs::Empty::ConstPtr& msg);
-    void speakCallback(const std_msgs::String::ConstPtr& msg);
+    rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr sub_base_ref;
+    rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr sub_open_door;
+    rclcpp::Subscription<std_msgs::msg::String>::SharedPtr sub_speak;
+    void baseReferenceCallback(const std::shared_ptr<const geometry_msgs::msg::Twist>& msg);
+    void openDoorCallback(const std::shared_ptr<const std_msgs::msg::Empty>& msg);
+    void speakCallback(const std::shared_ptr<const std_msgs::msg::String>& msg);
 };
 
 

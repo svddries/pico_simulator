@@ -10,7 +10,7 @@
 #include <fstream>
 #include <boost/optional.hpp>
 
-#include <rclcpp/rclcpp.hpp> // Replace ros/console.h with rclcpp/rclcpp.hpp
+#include <rclcpp/rclcpp.hpp> 
 
 #include <vector>
 
@@ -133,8 +133,8 @@ public:
         RCLCPP_INFO(rclcpp::get_logger("logger"), "Use pyro: %s", use_pyro.value() ? "true" : "false");
         if (spawn_provided.value())
         {
-            RCLCPP_INFO(rclcpp::get_logger("logger"), "Spawn Location: %s", spawn.value().getOrigin().toString().c_str());
-            RCLCPP_INFO(rclcpp::get_logger("logger"), "Spawn Rotation: %s", spawn.value().getBasis().toString().c_str());
+            RCLCPP_INFO_STREAM(rclcpp::get_logger("logger"), "Spawn Location: " << spawn.value().getOrigin());
+            RCLCPP_INFO_STREAM(rclcpp::get_logger("logger"), "Spawn Rotation: " << spawn.value().getBasis());
         }
         else
             RCLCPP_INFO(rclcpp::get_logger("logger"), "No spawn Location provided, will spawn robot in the middle of the map.");

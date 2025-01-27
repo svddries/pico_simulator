@@ -10,6 +10,7 @@ add_compile_options(-Wall -Wextra -Wpedantic)
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
@@ -24,6 +25,11 @@ include_directories(
   SYSTEM
   3rdparty
   ${GEOLIB2_INCLUDE_DIR}
+  ${tf2_INCLUDE_DIRS}
+  ${tf2_ros_INCLUDE_DIRS}
+  ${nav_msgs_INCLUDE_DIRS}
+  ${visualization_msgs_INCLUDE_DIRS}
+  ${geometry_msgs_INCLUDE_DIRS}
 )
 
 add_library(polypartition
@@ -45,16 +51,17 @@ add_executable(pico_simulator
 # Link libraries
 target_link_libraries(pico_simulator
   polypartition
+  ${rclcpp_LIBRARIES}
   ${GEOLIB2_LIBRARY} # Link geolib2 static library
+  ${tf2_LIBRARIES}
+  ${tf2_ros_LIBRARIES}
+  ${nav_msgs_LIBRARIES}
+  ${visualization_msgs_LIBRARIES}
+  ${geometry_msgs_LIBRARIES}
 )
 
-ament_target_dependencies(pico_simulator 
-  tf2 
-  rclcpp 
-  nav_msgs 
-  visualization_msgs 
-  geometry_msgs
-)
+ament_target_dependencies(pico_simulator tf2 tf2_ros rclcpp nav_msgs visualization_msgs geometry_msgs)
+
 
 # Install targets
 install(TARGETS pico_simulator
