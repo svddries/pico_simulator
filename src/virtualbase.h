@@ -5,9 +5,9 @@
 #ifndef EMC_SYSTEM_VIRTUALBASE_H
 #define EMC_SYSTEM_VIRTUALBASE_H
 
-#include "geometry_msgs/msg/twist.h"
+#include "geometry_msgs/msg/twist.hpp"
 #include "geometry_msgs/msg/pose.h"
-#include "nav_msgs/msg/odometry.h"
+#include "nav_msgs/msg/odometry.hpp"
 
 #include <random>
 #include <cmath>
@@ -87,7 +87,7 @@ private:
 
     geometry_msgs::msg::Twist reference_twist;
     geometry_msgs::msg::Twist actual_twist;
-    nav_msgs::mag::Odometry odometry_state;
+    nav_msgs::msg::Odometry odometry_state;
     double a1, a2, a3;
     bool disable_speedcap_;
     bool uncertain_odom_;
