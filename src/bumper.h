@@ -21,7 +21,7 @@ class Bumper
     // EXTRA radius of the bumper
     double _bumperRadius;
     // Check for hits in range
-    bool _checkHits(const sensor_msgs::LaserScan& lrf_msg, const int indexStart, const int indexEnd) const;
+    bool _checkHits(const sensor_msgs::msg::LaserScan& lrf_msg, const int indexStart, const int indexEnd) const;
     // Radius of the robot as a function of theta
     double _radiusTheta(const double theta) const;
     // Raidus of the robot plus the bumper as a function of theta

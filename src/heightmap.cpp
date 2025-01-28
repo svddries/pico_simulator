@@ -1,5 +1,6 @@
 #include "heightmap.h"
 #include "door.h"
+#include "polypartition.h"
 
 #include <rclcpp/rclcpp.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -55,7 +56,7 @@ void MapLoader::load()
 }
 
 
-void MapLoader::mapCallback(const nav_msgs::OccupancyGrid::ConstPtr& msg)
+void MapLoader::mapCallback(const std::shared_ptr<const nav_msgs::msg::OccupancyGrid>& msg)
 {
     map = *msg;
     //convert to image
@@ -73,7 +74,7 @@ void MapLoader::mapCallback(const nav_msgs::OccupancyGrid::ConstPtr& msg)
         }
     }
     initialized = true;
-    sub_map.shutdown();
+    sub_map.reset(); 
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -261,7 +262,7 @@ geo::ShapePtr createHeightMapShape(const cv::Mat& image_tmp, double resolution, 
 
     if (!image.data)
     {
-        ROS_ERROR_STREAM("[PICO SIMULATOR] Loading heightmap failed.");
+        RCLCPP_ERROR_STREAM(rclcpp::get_logger("heightmap"), "[PICO SIMULATOR] Loading heightmap failed.");
         return geo::ShapePtr();
     }
 
@@ -477,7 +478,7 @@ geo::ShapePtr createHeightMapShape(const cv::Mat& image_tmp, double resolution, 
 
                     if (!pp.Triangulate_EC(&testpolys, &result))
                     {
-                        ROS_ERROR_STREAM("[PICO SIMULATOR] Could not triangulate polygon.");
+                        RCLCPP_ERROR_STREAM(rclcpp::get_logger("heightmap"), "[PICO SIMULATOR] Could not triangulate polygon.");
                         return shape;
                     }
 

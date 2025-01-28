@@ -22,7 +22,7 @@ public:
 
 private:
     void load();
-    void mapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
+    void mapCallback(const std::shared_ptr<const nav_msgs::msg::OccupancyGrid>& msg);
     rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr sub_map;
     bool initialized = false;
     nav_msgs::msg::OccupancyGrid map;

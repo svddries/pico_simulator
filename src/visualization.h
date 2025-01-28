@@ -1,7 +1,7 @@
 #ifndef PICO_SIMULATOR_VISUALIZATION_H_
 #define PICO_SIMULATOR_VISUALIZATION_H_
 
-#include <visualization_msgs/msg/marker_array.h>
+#include <visualization_msgs/msg/marker_array.hpp>
 
 #include "world.h"
 #include "robot.h"
