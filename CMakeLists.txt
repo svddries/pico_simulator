@@ -32,6 +32,7 @@ include_directories(
   ${visualization_msgs_INCLUDE_DIRS}
   ${geometry_msgs_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
+  ${CMAKE_SOURCE_DIR}/3rdparty/polypartition # Add this line
 )
 
 add_library(polypartition
