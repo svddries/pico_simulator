@@ -22,6 +22,8 @@
   <depend>visualization_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>opencv4</depend> 
+  <depend>image_geometry</depend> 
+  <depend>shape_msgs</depend>
 
   <exec_depend>rospy</exec_depend>
   
