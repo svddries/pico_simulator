@@ -17,6 +17,7 @@ find_package(geometry_msgs REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(image_geometry REQUIRED)
 find_package(shape_msgs REQUIRED)
+find_package(ament_index_cpp REQUIRED)
 
 set(GEOLIB2_INCLUDE_DIR "/home/wiktor/Desktop/mrc/geolib2/install/geolib2/include")
 set(GEOLIB2_LIBRARY "/home/wiktor/Desktop/mrc/geolib2/install/geolib2/lib/libgeolib.a")
@@ -34,7 +35,8 @@ include_directories(
   ${geometry_msgs_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
   ${shape_msgs_INCLUDE_DIRS}
-  ${CMAKE_SOURCE_DIR}/3rdparty/polypartition # Add this line
+  ${ament_index_cpp_INCLUDE_DIRS}
+  ${CMAKE_SOURCE_DIR}/3rdparty/polypartition 
 )
 
 add_library(polypartition
@@ -66,9 +68,10 @@ target_link_libraries(pico_simulator
   ${OpenCV_LIBS}
   ${image_geometry_LIBRARIES}
   ${shape_msgs_LIBRARIES}
+  ${ament_index_cpp_LIBRARIES}
 )
 
-ament_target_dependencies(pico_simulator tf2 tf2_ros rclcpp nav_msgs visualization_msgs geometry_msgs OpenCV image_geometry shape_msgs)
+ament_target_dependencies(pico_simulator tf2 tf2_ros rclcpp nav_msgs visualization_msgs geometry_msgs OpenCV image_geometry shape_msgs ament_index_cpp)
 
 
 # Install targets
@@ -76,10 +79,10 @@ install(TARGETS pico_simulator
   DESTINATION lib/${PROJECT_NAME}
 )
 
-install(DIRECTORY include/
-  DESTINATION include/
-)
+# install(DIRECTORY include/
+#   DESTINATION include/
+# )
 
 # Export dependencies
-ament_export_dependencies(rclcpp tf2 nav_msgs visualization_msgs geometry_msgs OpenCV image_geometry shape_msgs)
+ament_export_dependencies(rclcpp tf2 nav_msgs visualization_msgs geometry_msgs OpenCV image_geometry shape_msgs ament_index_cpp)
 ament_package()

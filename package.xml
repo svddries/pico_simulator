@@ -24,6 +24,7 @@
   <depend>opencv4</depend> 
   <depend>image_geometry</depend> 
   <depend>shape_msgs</depend>
+  <depend>ament_index_cpp</depend>
 
   <exec_depend>rospy</exec_depend>
   

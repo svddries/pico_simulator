@@ -11,21 +11,17 @@
 #include <geolib/Box.h>
 #include "jsonconfig.h"
 
-// ROS
-#include <ros/init.h>
-#include <ros/publisher.h>
-#include <ros/node_handle.h>
-#include <ros/package.h>
-#include <sensor_msgs/JointState.h>
+#include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/joint_state.hpp>
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/static_transform_broadcaster.h>
-#include <visualization_msgs/MarkerArray.h>
-
-#include <geometry_msgs/Twist.h>
-#include <nav_msgs/Odometry.h>
-#include <std_msgs/Bool.h>
-#include <std_msgs/Empty.h>
-#include <std_msgs/String.h>
+#include <visualization_msgs/msg/marker_array.hpp>
+#include <geometry_msgs/msg/twist.hpp>
+#include <nav_msgs/msg/odometry.hpp>
+#include <std_msgs/msg/bool.hpp>
+#include <std_msgs/msg/empty.hpp>
+#include <std_msgs/msg/string.hpp>
+#include <ament_index_cpp/get_package_share_directory.hpp>
 #include <iostream>
 #include <string>
 
@@ -40,30 +36,30 @@
 
 int main(int argc, char **argv){
 
-    ros::init(argc, argv, "pyro_simulator");
+    rclcpp::init(argc, argv);
+    auto node = std::make_shared<rclcpp::Node>("pyro_simulator");
 
     std::string heightmap_filename;
-    heightmap_filename = ros::package::getPath("emc_simulator") + "/data/heightmap.pgm";
+    heightmap_filename = ament_index_cpp::get_package_share_directory("emc_simulator") + "/data/heightmap.pgm";
 
     std::string config_filename;
-    config_filename = ros::package::getPath("emc_simulator") + "/data/defaultconfig.json";
+    config_filename = ament_index_cpp::get_package_share_directory("emc_simulator") + "data/defaultconfig.json";
 
     for(int i = 1; i < argc; i++){
         std::string config_supplied("--config");
         std::string map_supplied("--map");
         if(config_supplied.compare(argv[i])==0){
-            ROS_INFO_STREAM("User config file supplied!");
+            RCLCPP_INFO(node->get_logger(), "User config file supplied!");
             config_filename = std::string(argv[i+1]);
         }
         if(map_supplied.compare(argv[i])==0){
-            ROS_INFO_STREAM("User map file supplied!");
+            RCLCPP_INFO(node->get_logger(), "User map file supplied!");
             heightmap_filename = std::string(argv[i+1]);
         }
     }
 
     // Create jointstate publisher (for use with state_publisher node)
-    ros::NodeHandle nh;
-    ros::Publisher marker_pub = nh.advertise<visualization_msgs::MarkerArray>("geometry", 10);
+    auto marker_pub = node->create_publisher<visualization_msgs::msg::MarkerArray>("geometry", 10);
 
     Config config(config_filename);
     config.print();
@@ -92,7 +88,7 @@ int main(int argc, char **argv){
     std::vector<Door> doors;
     MapLoader loader;
     cv::Mat mapImage;
-    nav_msgs::MapMetaData metadata;
+    nav_msgs::msg::MapMetaData metadata;
     loader.getMapImage(mapImage);
     loader.getMapMetadata(metadata);
     if (!loader.isInitialized())
@@ -151,36 +147,36 @@ int main(int argc, char **argv){
         door.id = world.addObject(door.init_pose, door.shape, geo::Vector3(0, 1, 0), doortype);
     }
 
-    ROS_INFO_STREAM("start cycle");
-    ros::Rate r(cycle_freq);
+    RCLCPP_INFO(node->get_logger(), "start cycle");
+    rclcpp::Rate r(cycle_freq);
     double time_ = 0;
     double dt;
-    while(ros::ok())
+    while(rclcpp::ok())
     {
-        ros::spinOnce();
-        ros::Time time = ros::Time::now();
+        rclcpp::spin_some(node);
+        rclcpp::Time time = node->now();
 
         if(time_==0){
             dt = 0;
-            time_ = time.toSec();
+            time_ = time.seconds();
         }
         else{
-            dt = time.toSec() - time_;
-            time_ = time.toSec();
+            dt = time.seconds() - time_;
+            time_ = time.seconds();
         }
 
         geo::Pose3D robot_pose = world.object(robot.robot_id).pose;
         if (robot.base_ref_) // If there is a twist message in the queue
         {
             // Set robot velocity
-            geometry_msgs::Twist cmd = *robot.base_ref_;
+            geometry_msgs::msg::Twist cmd = *robot.base_ref_;
             robot.base.applyTwistAndUpdate(cmd, dt);
             robot.base_ref_.reset();
         }
         else{ // apply previous one again
             robot.base.update(dt);
         }
-        geometry_msgs::Twist actual_twist = robot.base.getActualTwist();
+        geometry_msgs::msg::Twist actual_twist = robot.base.getActualTwist();
         world.setVelocity(robot.robot_id, geo::Vector3(actual_twist.linear.x, actual_twist.linear.y, 0), actual_twist.angular.z);
 
         //check if object should start moving
@@ -253,7 +249,7 @@ int main(int argc, char **argv){
             robot.request_open_door_ = false;
         }
 
-        if(config.uncertain_odom.value() && time.sec%6 == 0 ){
+        if(config.uncertain_odom.value() && static_cast<int>(time.seconds()) % 6 == 0 ){
             robot.base.updateWheelUncertaintyFactors();
         }
 
@@ -265,35 +261,35 @@ int main(int argc, char **argv){
                 world.setVelocity(door.id, geo::Vector3(0, 0, 0), 0);
         }
 
-        world.update(time.toSec());
+        world.update(time.seconds());
 
         bool collision = false;
         // create output
         // Create laser data
-        sensor_msgs::LaserScan scan_msg;
+        sensor_msgs::msg::LaserScan scan_msg;
         scan_msg.header.frame_id = "base_link";
         lrf.generateLaserData(world, robot, scan_msg);
-        robot.pub_laser.publish(scan_msg);
+        robot.pub_laser->publish(scan_msg);
 
         // Create bumper data 
-        std_msgs::Bool bump_msg_f; // front bumper message
-        std_msgs::Bool bump_msg_r; // rear bumper message
+        std_msgs::msg::Bool bump_msg_f; // front bumper message
+        std_msgs::msg::Bool bump_msg_r; // rear bumper message
         bumper.generateBumperData(world,robot,bump_msg_f,bump_msg_r);
-        robot.pub_bumperF.publish(bump_msg_f);
-        robot.pub_bumperR.publish(bump_msg_r);
+        robot.pub_bumperF->publish(bump_msg_f);
+        robot.pub_bumperR->publish(bump_msg_r);
 
         // Detect collission based on bumper data 
         collision = collision || bump_msg_f.data || bump_msg_r.data;
 
         // Create odom data
-        nav_msgs::Odometry odom_msg = robot.base.getOdom();
+        nav_msgs::msg::Odometry odom_msg = robot.base.getOdom();
         if(!config.uncertain_odom.value()){
             geo::convert(world.object(robot.robot_id).pose, odom_msg.pose.pose);
         }
         odom_msg.header.stamp = time;
         odom_msg.header.frame_id = "odomframe";
 
-        robot.pub_odom.publish(odom_msg);
+        robot.pub_odom->publish(odom_msg);
         // Write tf2 data
         geo::Pose3D pose = world.object(robot.robot_id).pose;
         robot.pubTransform(pose);
@@ -303,10 +299,10 @@ int main(int argc, char **argv){
             visualization::visualize(world, robot, collision, config.show_full_map.value(), bbox, robot_radius);
 
         auto objects = visualization::create_rviz_objectmsg(world);
-        marker_pub.publish(objects);
+        marker_pub->publish(objects);
 
         if (collision)
-            ROS_WARN_STREAM("COLLISION!");
+            RCLCPP_WARN(node->get_logger(), "COLLISION!");
 
         r.sleep();
     }
