@@ -187,12 +187,12 @@ void visualize(const World& world, const Robot& robot, bool collision = false, b
 
 visualization_msgs::msg::MarkerArray create_rviz_objectmsg(const World &world)
 {
-    visualization_msgs::MarkerArray objects;
-    visualization_msgs::Marker object;
+    visualization_msgs::msg::MarkerArray objects;
+    visualization_msgs::msg::Marker object;
 
     object.header.frame_id = "map";
-    object.header.stamp = ros::Time::now();
-    object.action = visualization_msgs::Marker::MODIFY;
+    object.header.stamp = rclcpp::Clock().now();
+    object.action = visualization_msgs::msg::Marker::MODIFY;
     object.pose.position.x = 0.0;
 
     object.pose.position.y = 0.0;
@@ -221,7 +221,7 @@ visualization_msgs::msg::MarkerArray create_rviz_objectmsg(const World &world)
 
         if (obj.type == doortype)
         {
-            object.type = visualization_msgs::Marker::TRIANGLE_LIST;
+            object.type = visualization_msgs::msg::Marker::TRIANGLE_LIST;
             object.scale.x = 1.0;
             object.color.r = 0.0;
             object.color.b = 0.0;
@@ -230,7 +230,7 @@ visualization_msgs::msg::MarkerArray create_rviz_objectmsg(const World &world)
         }
         else if (obj.type == movingObjecttype)
         {
-            object.type = visualization_msgs::Marker::LINE_STRIP;
+            object.type = visualization_msgs::msg::Marker::LINE_STRIP;
             object.scale.x = 0.05;
             object.color.r = 1.00;
             object.color.b = 0.00;
