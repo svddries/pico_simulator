@@ -13,6 +13,7 @@
 
 MapLoader::MapLoader() : Node("map_loader")
 {
+    RCLCPP_INFO(this->get_logger(), "Map subscriber created");
     sub_map = this->create_subscription<nav_msgs::msg::OccupancyGrid>(
         "/map", 1, std::bind(&MapLoader::mapCallback, this, std::placeholders::_1));
 }
@@ -58,6 +59,7 @@ void MapLoader::load()
 
 void MapLoader::mapCallback(const std::shared_ptr<const nav_msgs::msg::OccupancyGrid>& msg)
 {
+    RCLCPP_INFO(this->get_logger(), "Map received");
     map = *msg;
     //convert to image
     mapImage = cv::Mat(map.info.height, map.info.width, CV_8UC1);

@@ -18,6 +18,7 @@ find_package(OpenCV REQUIRED)
 find_package(image_geometry REQUIRED)
 find_package(shape_msgs REQUIRED)
 find_package(ament_index_cpp REQUIRED)
+find_package(nav2_map_server REQUIRED)
 
 set(GEOLIB2_INCLUDE_DIR "/home/wiktor/Desktop/mrc/geolib2/install/geolib2/include")
 set(GEOLIB2_LIBRARY "/home/wiktor/Desktop/mrc/geolib2/install/geolib2/lib/libgeolib.a")
@@ -82,6 +83,19 @@ install(TARGETS pico_simulator
 # install(DIRECTORY include/
 #   DESTINATION include/
 # )
+
+install(DIRECTORY launch/
+  DESTINATION share/${PROJECT_NAME}/launch
+)
+
+install(DIRECTORY data/
+  DESTINATION share/${PROJECT_NAME}/data
+)
+
+install(DIRECTORY config/
+  DESTINATION share/${PROJECT_NAME}/config
+)
+
 
 # Export dependencies
 ament_export_dependencies(rclcpp tf2 nav_msgs visualization_msgs geometry_msgs OpenCV image_geometry shape_msgs ament_index_cpp)
