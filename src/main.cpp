@@ -36,27 +36,41 @@
 
 int main(int argc, char **argv){
 
-    rclcpp::init(argc, argv);
-    auto node = std::make_shared<rclcpp::Node>("pyro_simulator");
-
-    std::string heightmap_filename;
-    heightmap_filename = ament_index_cpp::get_package_share_directory("emc_simulator") + "/data/heightmap.pgm";
-
     std::string config_filename;
-    config_filename = ament_index_cpp::get_package_share_directory("emc_simulator") + "data/defaultconfig.json";
+    std::string heightmap_filename;
 
     for(int i = 1; i < argc; i++){
         std::string config_supplied("--config");
         std::string map_supplied("--map");
-        if(config_supplied.compare(argv[i])==0){
-            RCLCPP_INFO(node->get_logger(), "User config file supplied!");
+        if(config_supplied.compare(argv[i])==0 && i + 1 < argc){
             config_filename = std::string(argv[i+1]);
         }
-        if(map_supplied.compare(argv[i])==0){
-            RCLCPP_INFO(node->get_logger(), "User map file supplied!");
+        if(map_supplied.compare(argv[i])==0 && i + 1 < argc){
             heightmap_filename = std::string(argv[i+1]);
         }
     }
+
+    // REMEMBER TO CHANGE THE DEFAULT PATHS
+    if (config_filename.empty()) {
+        config_filename = "/home/wiktor/Desktop/mrc/emc_simulator/data/defaultconfig.json";
+    }
+    if (heightmap_filename.empty()) {
+        heightmap_filename = "/home/wiktor/Desktop/mrc/emc_simulator/data/heightmap.pgm";
+    }
+
+    // Debug prints to check file paths
+    std::cout << "Config file path: " << config_filename << std::endl;
+    std::cout << "Heightmap file path: " << heightmap_filename << std::endl;
+
+    // Check if the config file exists
+    std::ifstream config_file(config_filename);
+    if (!config_file.good()) {
+        std::cerr << "Config file not found or not accessible: " << config_filename << std::endl;
+        return 1;
+    }
+
+    rclcpp::init(argc, argv);
+    auto node = std::make_shared<rclcpp::Node>("pyro_simulator");
 
     // Create jointstate publisher (for use with state_publisher node)
     auto marker_pub = node->create_publisher<visualization_msgs::msg::MarkerArray>("geometry", 10);
