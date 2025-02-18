@@ -23,29 +23,6 @@ def generate_launch_description():
         description="Path to the map file"
     )
 
-    # # Path to URDF/Xacro
-    # xacro_file = os.path.join(emc_simulator_share_dir, "urdf", "rosbot.urdf.xacro")
-
-    # # Convert Xacro to URDF
-    # robot_description_content = Command([
-    #     FindExecutable(name="xacro"), xacro_file
-    # ])
-
-    # Nodes
-    # robot_state_publisher = Node(
-    #     package="robot_state_publisher",
-    #     executable="robot_state_publisher",
-    #     name="robot_state_publisher",
-    #     parameters=[{"robot_description": robot_description_content}]
-    # )
-
-    # joint_state_publisher = Node(
-    #     package="joint_state_publisher",
-    #     executable="joint_state_publisher",
-    #     name="joint_state_publisher",
-    #     parameters=[{"rate": 30}]
-    # )
-
     map_server = Node(
         package="nav2_map_server",
         executable="map_server",
@@ -56,9 +33,10 @@ def generate_launch_description():
     simulator = Node(
         package="emc_simulator",
         executable="pico_simulator",
-        name="simulator",
+        name="simulator_node",
         arguments=["--config", LaunchConfiguration("config")],
-        output="screen"
+        output="screen",
+        parameters=[os.path.join(emc_simulator_share_dir, "simconfig", "simbot_config.yaml")]
     )
 
     lifecycle_nodes = ['map_server']
@@ -73,10 +51,8 @@ def generate_launch_description():
             emulate_tty=True,  # https://github.com/ros2/launch/issues/188
             parameters=[{'use_sim_time': use_sim_time},
                         {'autostart': autostart},
-                        {'node_names': lifecycle_nodes}])
-
-
-
+                        {'node_names': lifecycle_nodes}]
+    )
 
     LaunchDescription().add_action(map_server)
     LaunchDescription().add_action(start_lifecycle_manager_cmd)
