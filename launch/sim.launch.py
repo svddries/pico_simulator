@@ -33,7 +33,7 @@ def generate_launch_description():
     simulator = Node(
         package="emc_simulator",
         executable="pico_simulator",
-        name="simulator_node",
+        # name="simulator_node",
         arguments=["--config", LaunchConfiguration("config")],
         output="screen",
         parameters=[os.path.join(emc_simulator_share_dir, "simconfig", "simbot_config.yaml")]
